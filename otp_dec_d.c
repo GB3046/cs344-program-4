@@ -58,6 +58,13 @@ int main(int argc, char const *argv[])
 		memset(signature, '\0', sizeof(signature));
 		memset(cipherText, '\0', sizeof(cipherText));
 
+		int cipherTextLength = 0;
+		//int keyLength = 0;
+		int plainNum;
+		int keyNum;
+		int cipherNum;
+		int i;
+
 		switch (pid)
 		{
 			case -1:
@@ -71,9 +78,43 @@ int main(int argc, char const *argv[])
 				printf("SERVER: I received this from the client: \"%s\"\n", buffer);
 
 				// encoding code
-				sscanf(message, "%s$%s$%s", plainText, key, signature);
-				
+				sscanf(message, "%s$%s$%s", cipherText, key, signature);
 
+				cipherTextLength = strlen(cipherText);
+				
+				for (i = 0; i < cipherTextLength; ++i)
+				{
+					cipherNum = cipherText[i];
+					if (cipherNum == 32)
+					{
+						cipherNum = 0;
+					}
+					else
+					{
+						cipherNum -= 64;
+					}
+
+					keyNum = key[i];
+					if (keyNum == 32)
+					{
+						keyNum = 0;
+					}
+					else
+					{
+						keyNum -= 64;
+					}
+
+					plainNum = (27 + cipherNum - keyNum) % 27
+
+					if (plainNum == 0)
+					{
+						plainText[i] = ' ';
+					}
+					else
+					{
+						plainText[i] = plainNum + 64;
+					}
+				}
 
 				// Send a Success message back to the client
 				charsRead = send(establishedConnectionFD, "I am the server, and I got your message", 39, 0); // Send success back
