@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
 
 	if (argc < 4)
 	{
-		fprintf(stderr, "Not enough arguments\n", );
+		fprintf(stderr, "Not enough arguments\n");
 		exit(1);
 	}
 
@@ -26,7 +26,7 @@ int main(int argc, char const *argv[])
 
 	if (fdPlainText == -1 || fdKey == -1)
 	{
-		fprintf(stderr, "Failed to open files\n", );
+		fprintf(stderr, "Failed to open files\n");
 		exit(1);
 	}
 
@@ -37,13 +37,13 @@ int main(int argc, char const *argv[])
 
 	if (read(fdPlainText, plainText, sizeof(plainText)) == -1)
 	{
-		fprintf(stderr, "Failed to read plain text\n", );
+		fprintf(stderr, "Failed to read plain text\n");
 		exit(1);
 	}
 
 	if (read(fdKey, key, sizeof(key)) == -1)
 	{
-		fprintf(stderr, "Failed to read plain text\n", );
+		fprintf(stderr, "Failed to read plain text\n");
 		exit(1);
 	}
 	plainText[strlen(plainText) - 1] = '\0';
@@ -53,7 +53,7 @@ int main(int argc, char const *argv[])
 	int keyLength = strlen(key);
 	if (plainTextLength > keyLength)
 	{
-		fprintf(stderr, "Key is shorter than plain text\n", );
+		fprintf(stderr, "Key is shorter than plain text\n");
 		exit(1);
 	}
 
@@ -62,7 +62,7 @@ int main(int argc, char const *argv[])
 	{
 		if (!isupper(plainText[i] && !isspace(plainText[i])))
 		{
-			fprintf(stderr, "Invalid characters in plain text\n", );
+			fprintf(stderr, "Invalid characters in plain text\n");
 		}
 	}
 
@@ -71,7 +71,7 @@ int main(int argc, char const *argv[])
 	{
 		if (!isupper(key[i] && !isspace(key[i])))
 		{
-			fprintf(stderr, "Invalid characters in key\n", );
+			fprintf(stderr, "Invalid characters in key\n");
 		}
 	}
 
@@ -126,7 +126,7 @@ int main(int argc, char const *argv[])
 		charsSentThisPass = send(socketFD, message[charsWritten], strlen(message[charsWritten]), 0);
 		if (charsSentThisPass < 0)
 		{
-			fprintf(stderr, "Error writing to socket\n", );
+			fprintf(stderr, "Error writing to socket\n");
 			exit(1);
 		}
 		charsWritten += charsSentThisPass;
