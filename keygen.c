@@ -28,7 +28,7 @@ int main(int argc, char const *argv[])
 	int length = 0;
 	length = atoi(argv[1]);
 	//char key[length +1];
-	//memset(key, sizeof(key), '\0');
+	//memset(key, '\0', sizeof(key));
 	srand(time(NULL));
 
 	int j;
