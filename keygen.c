@@ -23,26 +23,32 @@ int main(int argc, char const *argv[])
 			
 	}
 
-	int length 0;
+	int randInt;
+	char randChar;
+	int length = 0;
 	length = atoi(argv[1]);
-	char key[length +1];
-	memset(key, sizeof(key), '\0');
+	//char key[length +1];
+	//memset(key, sizeof(key), '\0');
 	srand(time(NULL));
 
 	int j;
 	for (j = 0; j < length; ++j)
 	{
-		int randInt = rand() % 27;
+		randInt = rand() % 27;
 		if (randInt == 0)
 		{
-			randInt = 32;
+			//randInt = 32;
+			printf(" ");
 		}
 		else
 		{
-			randInt += 64;
+			//randInt += 64;
+			randChar = randInt + 64;
+			printf("%c\n", randChar);
 		}
-		key[j] = randInt;
 	}
-	printf("%s\n", key);
+	//printf("%s\n", key);
+	printf("\n");
+	fflush(stdout);
 	return 0;
 }
