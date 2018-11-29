@@ -30,8 +30,8 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
-	char cipherText[50000];
-	char key[50000];
+	char cipherText[80000];
+	char key[80000];
 	memset(cipherText, '\0', sizeof(cipherText));
 	memset(key, '\0', sizeof(key));
 
@@ -79,7 +79,7 @@ int main(int argc, char const *argv[])
 
 	char signature[] = "opt_dec";
 
-	char message[102400];
+	char message[200000];
 	memset(message, '\0', sizeof(message));
 
 	sprintf(message, "%s$%s$%s", cipherText, key, signature);

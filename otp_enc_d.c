@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
 {
 	int listenSocketFD, establishedConnectionFD, portNumber, charsRead;
 	socklen_t sizeOfClientInfo;
-	char buffer[102400];
+	char buffer[200000];
 	struct sockaddr_in serverAddress, clientAddress;
 
 	if (argc < 2) { fprintf(stderr,"USAGE: %s port\n", argv[0]); exit(1); } // Check usage & args
@@ -47,11 +47,11 @@ int main(int argc, char const *argv[])
 		int pid = fork();
 		int exitStatus;
 
-		char message[102400];
-		char plainText[50000];
-		char key[50000];
+		char message[200000];
+		char plainText[80000];
+		char key[80000];
 		char signature[2400];
-		char cipherText[50000];
+		char cipherText[80000];
 		memset(message, '\0', sizeof(message));
 		memset(plainText, '\0', sizeof(plainText));
 		memset(key, '\0', sizeof(key));
@@ -75,22 +75,22 @@ int main(int argc, char const *argv[])
 				memset(buffer, '\0', sizeof(buffer));
 				charsRead = recv(establishedConnectionFD, message, sizeof(message), 0); // Read the client's message from the socket
 				if (charsRead < 0) error("ERROR reading from socket");
-				printf("SERVER: I received this from the client: \"%s\"\n", message);
+				//printf("SERVER: I received this from the client: \"%s\"\n", message);
 
 				// encoding code
 				sscanf(message, "%[^'$']$%[^'$']$%s", plainText, key, signature);
 
-				printf("%s\n", plainText);
-				printf("%s\n", key);
-				printf("%s\n", signature);
+				//printf("%s\n", plainText);
+				//printf("%s\n", key);
+				//printf("%s\n", signature);
 
 				plainTextLength = strlen(plainText);
 
 				for (i = 0; i < plainTextLength; ++i)
 				{
-					printf("%d\n", i);
+					//printf("%d\n", i);
 					plainNum = plainText[i];
-					printf("%d\n", plainNum);
+					//printf("%d\n", plainNum);
 					if (plainNum == 32)
 					{
 						plainNum = 0;
@@ -111,7 +111,7 @@ int main(int argc, char const *argv[])
 					}
 
 					cipherNum = (plainNum + keyNum) % 27;
-					printf("%d\n", cipherNum);
+					//printf("%d\n", cipherNum);
 
 					if (cipherNum == 0)
 					{
@@ -123,7 +123,7 @@ int main(int argc, char const *argv[])
 					}
 				}
 
-				printf("%s\n", cipherText);
+				//printf("%s\n", cipherText);
 
 				// Send a Success message back to the client
 				//charsRead = send(establishedConnectionFD, "I am the server, and I got your message", 39, 0); // Send success back

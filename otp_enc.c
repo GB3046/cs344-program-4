@@ -30,8 +30,8 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
-	char plainText[50000];
-	char key[50000];
+	char plainText[80000];
+	char key[80000];
 	memset(plainText, '\0', sizeof(plainText));
 	memset(key, '\0', sizeof(key));
 
@@ -57,8 +57,8 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
-	printf("%s\n", plainText);
-	printf("%s\n", key);
+	//printf("%s\n", plainText);
+	//printf("%s\n", key);
 
 	int i;
 	for (i = 0; i < plainTextLength; ++i)
@@ -82,7 +82,7 @@ int main(int argc, char const *argv[])
 
 	char signature[] = "opt_enc";
 
-	char message[102400];
+	char message[200000];
 	memset(message, '\0', sizeof(message));
 
 	sprintf(message, "%s$%s$%s", plainText, key, signature);

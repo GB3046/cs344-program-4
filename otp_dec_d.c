@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
 {
 	int listenSocketFD, establishedConnectionFD, portNumber, charsRead;
 	socklen_t sizeOfClientInfo;
-	char buffer[102400];
+	char buffer[200000];
 	struct sockaddr_in serverAddress, clientAddress;
 
 	if (argc < 2) { fprintf(stderr,"USAGE: %s port\n", argv[0]); exit(1); } // Check usage & args
@@ -47,11 +47,11 @@ int main(int argc, char const *argv[])
 		int pid = fork();
 		int exitStatus;
 
-		char message[102400];
-		char plainText[50000];
-		char key[50000];
+		char message[200000];
+		char plainText[80000];
+		char key[80000];
 		char signature[2400];
-		char cipherText[50000];
+		char cipherText[80000];
 		memset(message, '\0', sizeof(message));
 		memset(plainText, '\0', sizeof(plainText));
 		memset(key, '\0', sizeof(key));
