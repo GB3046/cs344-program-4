@@ -76,9 +76,16 @@ int main(int argc, char const *argv[])
 				charsRead = recv(establishedConnectionFD, message, sizeof(message), 0); // Read the client's message from the socket
 				if (charsRead < 0) error("ERROR reading from socket");
 				//printf("SERVER: I received this from the client: \"%s\"\n", message);
+				//printf("%d\n", strlen(message));
 
 				// encoding code
 				sscanf(message, "%[^'$']$%[^'$']$%s", plainText, key, signature);
+
+				if (strcmp(signature, "otp_enc") != 0)
+				{
+					fprintf(stderr, "Wrong server\n");
+					exit(1);
+				}
 
 				//printf("%s\n", plainText);
 				//printf("%s\n", key);
@@ -129,6 +136,8 @@ int main(int argc, char const *argv[])
 				//charsRead = send(establishedConnectionFD, "I am the server, and I got your message", 39, 0); // Send success back
 				charsRead = send(establishedConnectionFD, &cipherText, strlen(cipherText), 0); // Send success back
 				if (charsRead < 0) error("ERROR writing to socket");
+
+				exit(0);
 			default:
 				close(establishedConnectionFD); // Close the existing socket which is connected to the client			
 				do

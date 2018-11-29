@@ -60,7 +60,7 @@ int main(int argc, char const *argv[])
 	int i;
 	for (i = 0; i < cipherTextLength; ++i)
 	{
-		if (isupper(cipherText[i] != 0 && isspace(cipherText[i]) != 0))
+		if (isupper(cipherText[i]) != 0 && isspace(cipherText[i]) != 0)
 		{
 			fprintf(stderr, "Invalid characters in plain text\n");
 			exit(1);
@@ -70,14 +70,14 @@ int main(int argc, char const *argv[])
 	//int i;
 	for (i = 0; i < keyLength; ++i)
 	{
-		if (isupper(key[i] != 0 && isspace(key[i]) != 0))
+		if (isupper(key[i]) != 0 && isspace(key[i]) != 0)
 		{
 			fprintf(stderr, "Invalid characters in key\n");
 			exit(1);
 		}
 	}
 
-	char signature[] = "opt_dec";
+	char signature[] = "otp_dec";
 
 	char message[200000];
 	memset(message, '\0', sizeof(message));
@@ -89,7 +89,7 @@ int main(int argc, char const *argv[])
 	int socketFD, portNumber, charsWritten, charsRead;
 	struct sockaddr_in serverAddress;
 	struct hostent* serverHostInfo;
-	char buffer[4096];
+	char buffer[80000];
     
 	//if (argc < 3) { fprintf(stderr,"USAGE: %s hostname port\n", argv[0]); exit(0); } // Check usage & args
 

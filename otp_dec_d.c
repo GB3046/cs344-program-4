@@ -80,6 +80,12 @@ int main(int argc, char const *argv[])
 				// encoding code
 				sscanf(message, "%[^'$']$%[^'$']$%s", cipherText, key, signature);
 
+				if (strcmp(signature, "otp_dec") != 0)
+				{
+					fprintf(stderr, "Wrong server\n");
+					exit(1);
+				}
+
 				//printf("%s\n", cipherText);
 				//printf("%s\n", key);
 				//printf("%s\n", signature);
@@ -126,6 +132,8 @@ int main(int argc, char const *argv[])
 				//charsRead = send(establishedConnectionFD, "I am the server, and I got your message", 39, 0); // Send success back
 				charsRead = send(establishedConnectionFD, &plainText, strlen(plainText), 0); // Send success back
 				if (charsRead < 0) error("ERROR writing to socket");
+
+				exit(0);
 			default:
 				close(establishedConnectionFD); // Close the existing socket which is connected to the client			
 				do

@@ -60,10 +60,22 @@ int main(int argc, char const *argv[])
 	//printf("%s\n", plainText);
 	//printf("%s\n", key);
 
+	char c;
 	int i;
 	for (i = 0; i < plainTextLength; ++i)
 	{
-		if (isupper(plainText[i] != 0 && !isspace(plainText[i]) != 0))
+		c = plainText[i];
+		//printf("%s\n", plainText);
+		//printf("%c\n", plainText[i]);
+		//printf("%d\n", plainText[i]);
+		//printf("%d\n", isupper('$'));
+		//printf("%d\n", isspace(c));
+		
+		if (isupper(c) || isspace(c))
+		{
+			// do nothing
+		}
+		else
 		{
 			fprintf(stderr, "Invalid characters in plain text\n");
 			exit(1);
@@ -73,26 +85,27 @@ int main(int argc, char const *argv[])
 	//int i;
 	for (i = 0; i < keyLength; ++i)
 	{
-		if (isupper(key[i] != 0 && isspace(key[i]) != 0))
+		if (isupper(key[i]) != 0 && isspace(key[i]) != 0)
 		{
 			fprintf(stderr, "Invalid characters in key\n");
 			exit(1);
 		}
 	}
 
-	char signature[] = "opt_enc";
+	char signature[] = "otp_enc";
 
 	char message[200000];
 	memset(message, '\0', sizeof(message));
 
 	sprintf(message, "%s$%s$%s", plainText, key, signature);
 
+	//printf("%s\n", message);
 
 	// client network stuff
 	int socketFD, portNumber, charsWritten, charsRead;
 	struct sockaddr_in serverAddress;
 	struct hostent* serverHostInfo;
-	char buffer[4096];
+	char buffer[80000];
     
 	//if (argc < 3) { fprintf(stderr,"USAGE: %s hostname port\n", argv[0]); exit(0); } // Check usage & args
 
