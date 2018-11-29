@@ -14,41 +14,49 @@ void error(const char *msg) { perror(msg); exit(2); } // Error function used for
 
 int main(int argc, char const *argv[])
 {
-
+	// checks if too few arguments were given
 	if (argc < 4)
 	{
 		fprintf(stderr, "Not enough arguments\n");
 		exit(1);
 	}
 
+	// opens files to read
 	int fdCipherText = open(argv[1], O_RDONLY);
 	int fdKey = open(argv[2], O_RDONLY);
 
+	// checks if both files were opened properly
 	if (fdCipherText == -1 || fdKey == -1)
 	{
 		fprintf(stderr, "Failed to open files\n");
 		exit(1);
 	}
 
+	// variables to store data from files
 	char cipherText[80000];
 	char key[80000];
 	memset(cipherText, '\0', sizeof(cipherText));
 	memset(key, '\0', sizeof(key));
 
+	// read cipher text
 	if (read(fdCipherText, cipherText, sizeof(cipherText)) == -1)
 	{
 		fprintf(stderr, "Failed to read plain text\n");
 		exit(1);
 	}
 
+	// read key text
 	if (read(fdKey, key, sizeof(key)) == -1)
 	{
 		fprintf(stderr, "Failed to read plain text\n");
 		exit(1);
 	}
+
+	// get rid of extra newlines at the end of strings
 	cipherText[strlen(cipherText) - 1] = '\0';
 	key[strlen(key) - 1] = '\0';
 
+	// get length of strings and check if key is shorter than cipher
 	int cipherTextLength = strlen(cipherText);
 	int keyLength = strlen(key);
 	if (cipherTextLength > keyLength)
@@ -57,6 +65,7 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
+	// checks if cipher has only valid characters
 	char c;
 	int i;
 	for (i = 0; i < cipherTextLength; ++i)
@@ -73,7 +82,7 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-	//int i;
+	// checks if key has only valid characters
 	for (i = 0; i < keyLength; ++i)
 	{
 		c = key[i];
@@ -88,21 +97,21 @@ int main(int argc, char const *argv[])
 		}
 	}
 
+	// creates signature for server to identify who client is
 	char signature[] = "otp_dec";
 
+	// variable to hold message to send
 	char message[200000];
 	memset(message, '\0', sizeof(message));
 
+	// combines all strings into one string to send
 	sprintf(message, "%s$%s$%s", cipherText, key, signature);
-
 
 	// client network stuff
 	int socketFD, portNumber, charsWritten, charsRead;
 	struct sockaddr_in serverAddress;
 	struct hostent* serverHostInfo;
 	char buffer[80000];
-    
-	//if (argc < 3) { fprintf(stderr,"USAGE: %s hostname port\n", argv[0]); exit(0); } // Check usage & args
 
 	// Set up the server address struct
 	memset((char*)&serverAddress, '\0', sizeof(serverAddress)); // Clear out the address struct
@@ -121,17 +130,7 @@ int main(int argc, char const *argv[])
 	if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) // Connect socket to address
 		error("CLIENT: ERROR connecting");
 
-	// Get input message from user
-	// printf("CLIENT: Enter text to send to the server, and then hit enter: ");
-	// memset(buffer, '\0', sizeof(buffer)); // Clear out the buffer array
-	// fgets(buffer, sizeof(buffer) - 1, stdin); // Get input from the user, trunc to buffer - 1 chars, leaving \0
-	// buffer[strcspn(buffer, "\n")] = '\0'; // Remove the trailing \n that fgets adds
-
-	// Send message to server
-	// charsWritten = send(socketFD, message, strlen(message), 0); // Write to the server
-	// if (charsWritten < 0) error("CLIENT: ERROR writing to socket");
-	// if (charsWritten < strlen(message)) printf("CLIENT: WARNING: Not all data written to socket!\n");
-
+	// send message to server
 	charsWritten = 0;
 	int charsSentThisPass = 0;
 	do
@@ -146,15 +145,10 @@ int main(int argc, char const *argv[])
 
 	} while (charsWritten < strlen(message));
 
-	// Get return message from server
-	// memset(buffer, '\0', sizeof(buffer)); // Clear out the buffer again for reuse
-	// charsRead = recv(socketFD, buffer, sizeof(buffer) - 1, 0); // Read data from the socket, leaving \0 at end
-	// if (charsRead < 0) error("CLIENT: ERROR reading from socket");
-
+	// receive message from server
 	memset(message, '\0', sizeof(message));
 	do
 	{
-		// Get the message from the client and display it
 		memset(buffer, '\0', sizeof(buffer));
 		charsRead = recv(socketFD, buffer, sizeof(buffer), 0); // Read the client's message from the socket
 		if (charsRead < 0) error("ERROR reading from socket");
@@ -162,14 +156,15 @@ int main(int argc, char const *argv[])
 
 	} while (message[strlen(message)-1] != '\n');
 	
-	//printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
+	// checks if response from from correct server
 	if (message[0] == '\n')
 	{
 		fprintf(stderr, "Tried connecting to wrong server\n");
+		exit(2);
 	}
 	else
 	{
-		printf("%s", message);
+		printf("%s", message); // prints out cipher text
 	}
 
 	close(socketFD); // Close the socket

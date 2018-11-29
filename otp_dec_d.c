@@ -14,6 +14,7 @@ void error(const char *msg) { perror(msg); exit(1); } // Error function used for
 
 int main(int argc, char const *argv[])
 {
+	// variables for server initialization
 	int listenSocketFD, establishedConnectionFD, portNumber, charsRead;
 	socklen_t sizeOfClientInfo;
 	char buffer[200000];
@@ -37,6 +38,7 @@ int main(int argc, char const *argv[])
 		error("ERROR on binding");
 	listen(listenSocketFD, 5); // Flip the socket on - it can now receive up to 5 connections
 
+	// loop forever until killed
 	while(1)
 	{
 		// Accept a connection, blocking if one is not available until one connects
@@ -44,9 +46,11 @@ int main(int argc, char const *argv[])
 		establishedConnectionFD = accept(listenSocketFD, (struct sockaddr *)&clientAddress, &sizeOfClientInfo); // Accept
 		if (establishedConnectionFD < 0) error("ERROR on accept");
 
+		// forks after new connection is made
 		int pid = fork();
 		int exitStatus;
 
+		// variables to hold strings for incoming and outgoing messages
 		char message[200000];
 		char plainText[80000];
 		char key[80000];
@@ -58,28 +62,22 @@ int main(int argc, char const *argv[])
 		memset(signature, '\0', sizeof(signature));
 		memset(cipherText, '\0', sizeof(cipherText));
 
+		// variables used to decode message
 		int cipherTextLength = 0;
-		//int keyLength = 0;
 		int plainNum;
 		int keyNum;
 		int cipherNum;
 		int i;
 
-		switch (pid)
+		switch (pid) // switch based on if parent or child
 		{
-			case -1:
+			case -1: // if fork failed
 				fprintf(stderr, "Forking error\n");
 				exit(1);
-			case 0:
-				// Get the message from the client and display it
-				// memset(message, '\0', sizeof(message));
-				// charsRead = recv(establishedConnectionFD, message, sizeof(message), 0); // Read the client's message from the socket
-				// if (charsRead < 0) error("ERROR reading from socket");
-				//printf("SERVER: I received this from the client: \"%s\"\n", message);
-
+			case 0: // child process
+				// get message from client	
 				do
 				{
-					// Get the message from the client and display it
 					memset(buffer, '\0', sizeof(buffer));
 					charsRead = recv(establishedConnectionFD, buffer, sizeof(buffer), 0); // Read the client's message from the socket
 					if (charsRead < 0) error("ERROR reading from socket");
@@ -87,9 +85,10 @@ int main(int argc, char const *argv[])
 
 				} while (message[strlen(message)-1] != 'c');
 
-				// encoding code
+				// separate message into usable pieces
 				sscanf(message, "%[^'$']$%[^'$']$%s", cipherText, key, signature);
 
+				// checks if correct client is talking to server
 				if (strcmp(signature, "otp_dec") != 0)
 				{
 					//fprintf(stderr, "Wrong server\n");
@@ -97,50 +96,49 @@ int main(int argc, char const *argv[])
 					exit(1);
 				}
 
-				//printf("%s\n", cipherText);
-				//printf("%s\n", key);
-				//printf("%s\n", signature);
-
+				// find length of cipher text
 				cipherTextLength = strlen(cipherText);
 				
+				// loop through cipher text and decode characters one by one
 				for (i = 0; i < cipherTextLength; ++i)
 				{
-					cipherNum = cipherText[i];
-					if (cipherNum == 32)
+					cipherNum = cipherText[i]; // convert char to int
+					if (cipherNum == 32) // if char is space
 					{
 						cipherNum = 0;
 					}
-					else
+					else // else char is uppercase letter
 					{
 						cipherNum -= 64;
 					}
 
-					keyNum = key[i];
-					if (keyNum == 32)
+					keyNum = key[i]; // convert char to int
+					if (keyNum == 32) // if char is space
 					{
-						keyNum = 0;
+						keyNum = 0; // else char is uppercase letter
 					}
 					else
 					{
 						keyNum -= 64;
 					}
 
+					// do decoding math
 					plainNum = (27 + cipherNum - keyNum) % 27;
 
-					if (plainNum == 0)
+					if (plainNum == 0) // char is space
 					{
 						plainText[i] = ' ';
 					}
-					else
+					else // else char is uppercase letter
 					{
-						plainText[i] = plainNum + 64;
+						plainText[i] = plainNum + 64; // store decoded char
 					}
 				}
 
+				// add newline to end of string
 				plainText[strlen(plainText)] = '\n';
 
-				// Send a Success message back to the client
-				//charsRead = send(establishedConnectionFD, "I am the server, and I got your message", 39, 0); // Send success back
+				// Send decoded message to client
 				charsRead = send(establishedConnectionFD, &plainText, strlen(plainText), 0); // Send success back
 				if (charsRead < 0) error("ERROR writing to socket");
 				if (charsRead < strlen(plainText))
@@ -148,28 +146,16 @@ int main(int argc, char const *argv[])
 					fprintf(stderr, "Unable to send entire message\n");
 				}
 
-				exit(0);
-			default:
+				exit(0); // kill child process
+			default: // parent
 				close(establishedConnectionFD); // Close the existing socket which is connected to the client			
+				// wait for child to die
 				do
 				{
 					waitpid(pid, &exitStatus, 0);
 				} while (!WIFEXITED(exitStatus) && !WIFSIGNALED(exitStatus));
 		}
 	}
-
-	
-
-	// Get the message from the client and display it
-	// memset(buffer, '\0', 256);
-	// charsRead = recv(establishedConnectionFD, buffer, 255, 0); // Read the client's message from the socket
-	// if (charsRead < 0) error("ERROR reading from socket");
-	// printf("SERVER: I received this from the client: \"%s\"\n", buffer);
-
-	// Send a Success message back to the client
-	// charsRead = send(establishedConnectionFD, "I am the server, and I got your message", 39, 0); // Send success back
-	// if (charsRead < 0) error("ERROR writing to socket");
-	//close(establishedConnectionFD); // Close the existing socket which is connected to the client
 	close(listenSocketFD); // Close the listening socket
 	return 0;
 }
