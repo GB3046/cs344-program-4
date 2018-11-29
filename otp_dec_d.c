@@ -92,7 +92,7 @@ int main(int argc, char const *argv[])
 
 				if (strcmp(signature, "otp_dec") != 0)
 				{
-					fprintf(stderr, "Wrong server\n");
+					//fprintf(stderr, "Wrong server\n");
 					send(establishedConnectionFD, "\n", 2, 0);
 					exit(1);
 				}

@@ -10,7 +10,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-void error(const char *msg) { perror(msg); exit(1); } // Error function used for reporting issues
+void error(const char *msg) { perror(msg); exit(2); } // Error function used for reporting issues
 
 int main(int argc, char const *argv[])
 {
@@ -163,7 +163,14 @@ int main(int argc, char const *argv[])
 	} while (message[strlen(message)-1] != '\n');
 	
 	//printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
-	printf("%s", message);
+	if (message[0] == '\n')
+	{
+		fprintf(stderr, "Tried connecting to wrong server\n");
+	}
+	else
+	{
+		printf("%s", message);
+	}
 
 	close(socketFD); // Close the socket
 	return 0;
