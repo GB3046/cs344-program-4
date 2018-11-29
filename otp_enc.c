@@ -57,20 +57,11 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
-	//printf("%s\n", plainText);
-	//printf("%s\n", key);
-
 	char c;
 	int i;
 	for (i = 0; i < plainTextLength; ++i)
 	{
 		c = plainText[i];
-		//printf("%s\n", plainText);
-		//printf("%c\n", plainText[i]);
-		//printf("%d\n", plainText[i]);
-		//printf("%d\n", isupper('$'));
-		//printf("%d\n", isspace(c));
-		
 		if (isupper(c) || isspace(c))
 		{
 			// do nothing
@@ -85,7 +76,12 @@ int main(int argc, char const *argv[])
 	//int i;
 	for (i = 0; i < keyLength; ++i)
 	{
-		if (isupper(key[i]) != 0 && isspace(key[i]) != 0)
+		c = key[i];
+		if (isupper(c) || isspace(c))
+		{
+			// do nothing
+		}
+		else
 		{
 			fprintf(stderr, "Invalid characters in key\n");
 			exit(1);

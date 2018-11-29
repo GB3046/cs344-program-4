@@ -57,12 +57,18 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
+	char c;
 	int i;
 	for (i = 0; i < cipherTextLength; ++i)
 	{
-		if (isupper(cipherText[i]) != 0 && isspace(cipherText[i]) != 0)
+		c = cipherText[i];
+		if (isupper(c) || isspace(c))
 		{
-			fprintf(stderr, "Invalid characters in plain text\n");
+			// do nothing
+		}
+		else
+		{
+			fprintf(stderr, "Invalid characters in cipher text\n");
 			exit(1);
 		}
 	}
@@ -70,7 +76,12 @@ int main(int argc, char const *argv[])
 	//int i;
 	for (i = 0; i < keyLength; ++i)
 	{
-		if (isupper(key[i]) != 0 && isspace(key[i]) != 0)
+		c = key[i];
+		if (isupper(c) || isspace(c))
+		{
+			// do nothing
+		}
+		else
 		{
 			fprintf(stderr, "Invalid characters in key\n");
 			exit(1);
