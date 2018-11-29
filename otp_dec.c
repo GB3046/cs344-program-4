@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
 	}
 
 	int fdCipherText = open(argv[1], O_RDONLY);
-	int fdKey = open(argv[2], O_RDONLY)
+	int fdKey = open(argv[2], O_RDONLY);
 
 	if (fdCipherText == -1 || fdKey == -1)
 	{
@@ -60,18 +60,20 @@ int main(int argc, char const *argv[])
 	int i;
 	for (i = 0; i < cipherTextLength; ++i)
 	{
-		if (!isupper(cipherText[i] && !isspace(cipherText[i])))
+		if (isupper(cipherText[i] != 0 && isspace(cipherText[i]) != 0))
 		{
 			fprintf(stderr, "Invalid characters in plain text\n");
+			exit(1);
 		}
 	}
 
-	int i;
-	for (i = 0; i < keytLength; ++i)
+	//int i;
+	for (i = 0; i < keyLength; ++i)
 	{
-		if (!isupper(key[i] && !isspace(key[i])))
+		if (isupper(key[i] != 0 && isspace(key[i]) != 0))
 		{
 			fprintf(stderr, "Invalid characters in key\n");
+			exit(1);
 		}
 	}
 
@@ -123,7 +125,7 @@ int main(int argc, char const *argv[])
 	int charsSentThisPass = 0;
 	do
 	{
-		charsSentThisPass = send(socketFD, message[charsWritten], strlen(message[charsWritten]), 0);
+		charsSentThisPass = send(socketFD, &message, strlen(message), 0);
 		if (charsSentThisPass < 0)
 		{
 			fprintf(stderr, "Error writing to socket\n");
