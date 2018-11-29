@@ -16,7 +16,7 @@ int main(int argc, char const *argv[])
 {
 	int listenSocketFD, establishedConnectionFD, portNumber, charsRead;
 	socklen_t sizeOfClientInfo;
-	char buffer[256];
+	char buffer[102400];
 	struct sockaddr_in serverAddress, clientAddress;
 
 	if (argc < 2) { fprintf(stderr,"USAGE: %s port\n", argv[0]); exit(1); } // Check usage & args
@@ -73,18 +73,24 @@ int main(int argc, char const *argv[])
 			case 0:
 				// Get the message from the client and display it
 				memset(buffer, '\0', sizeof(buffer));
-				charsRead = recv(establishedConnectionFD, buffer, sizeof(buffer), 0); // Read the client's message from the socket
+				charsRead = recv(establishedConnectionFD, message, sizeof(message), 0); // Read the client's message from the socket
 				if (charsRead < 0) error("ERROR reading from socket");
-				printf("SERVER: I received this from the client: \"%s\"\n", buffer);
+				printf("SERVER: I received this from the client: \"%s\"\n", message);
 
 				// encoding code
-				sscanf(message, "%s$%s$%s", plainText, key, signature);
+				sscanf(message, "%[^'$']$%[^'$']$%s", plainText, key, signature);
+
+				printf("%s\n", plainText);
+				printf("%s\n", key);
+				printf("%s\n", signature);
 
 				plainTextLength = strlen(plainText);
 
 				for (i = 0; i < plainTextLength; ++i)
 				{
+					printf("%d\n", i);
 					plainNum = plainText[i];
+					printf("%d\n", plainNum);
 					if (plainNum == 32)
 					{
 						plainNum = 0;
@@ -104,7 +110,8 @@ int main(int argc, char const *argv[])
 						keyNum -= 64;
 					}
 
-					cipherNum = (plainNum + keyNum) % 27
+					cipherNum = (plainNum + keyNum) % 27;
+					printf("%d\n", cipherNum);
 
 					if (cipherNum == 0)
 					{
@@ -116,8 +123,11 @@ int main(int argc, char const *argv[])
 					}
 				}
 
+				printf("%s\n", cipherText);
+
 				// Send a Success message back to the client
-				charsRead = send(establishedConnectionFD, "I am the server, and I got your message", 39, 0); // Send success back
+				//charsRead = send(establishedConnectionFD, "I am the server, and I got your message", 39, 0); // Send success back
+				charsRead = send(establishedConnectionFD, &cipherText, strlen(cipherText), 0); // Send success back
 				if (charsRead < 0) error("ERROR writing to socket");
 			default:
 				close(establishedConnectionFD); // Close the existing socket which is connected to the client			

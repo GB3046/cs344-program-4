@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
 	}
 
 	int fdPlainText = open(argv[1], O_RDONLY);
-	int fdKey = open(argv[2], O_RDONLY)
+	int fdKey = open(argv[2], O_RDONLY);
 
 	if (fdPlainText == -1 || fdKey == -1)
 	{
@@ -57,21 +57,26 @@ int main(int argc, char const *argv[])
 		exit(1);
 	}
 
+	printf("%s\n", plainText);
+	printf("%s\n", key);
+
 	int i;
 	for (i = 0; i < plainTextLength; ++i)
 	{
-		if (!isupper(plainText[i] && !isspace(plainText[i])))
+		if (isupper(plainText[i] != 0 && !isspace(plainText[i]) != 0))
 		{
 			fprintf(stderr, "Invalid characters in plain text\n");
+			exit(1);
 		}
 	}
 
-	int i;
-	for (i = 0; i < keytLength; ++i)
+	//int i;
+	for (i = 0; i < keyLength; ++i)
 	{
-		if (!isupper(key[i] && !isspace(key[i])))
+		if (isupper(key[i] != 0 && isspace(key[i]) != 0))
 		{
 			fprintf(stderr, "Invalid characters in key\n");
+			exit(1);
 		}
 	}
 
@@ -121,17 +126,19 @@ int main(int argc, char const *argv[])
 
 	charsWritten = 0;
 	int charsSentThisPass = 0;
+	int messageLength = strlen(message);
 	do
 	{
-		charsSentThisPass = send(socketFD, message[charsWritten], strlen(message[charsWritten]), 0);
+		charsSentThisPass = send(socketFD, &message, strlen(message), 0);
 		if (charsSentThisPass < 0)
 		{
 			fprintf(stderr, "Error writing to socket\n");
 			exit(1);
 		}
 		charsWritten += charsSentThisPass;
+		//message += charsSentThisPass;
 
-	} while (charsWritten < strlen(message));
+	} while (charsWritten < messageLength);//strlen(message));
 
 	// Get return message from server
 	memset(buffer, '\0', sizeof(buffer)); // Clear out the buffer again for reuse

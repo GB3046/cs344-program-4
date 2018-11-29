@@ -44,7 +44,7 @@ int main(int argc, char const *argv[])
 		{
 			//randInt += 64;
 			randChar = randInt + 64;
-			printf("%c\n", randChar);
+			printf("%c", randChar);
 		}
 	}
 	//printf("%s\n", key);
