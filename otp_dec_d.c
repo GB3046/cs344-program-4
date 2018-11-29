@@ -72,10 +72,20 @@ int main(int argc, char const *argv[])
 				exit(1);
 			case 0:
 				// Get the message from the client and display it
-				memset(message, '\0', sizeof(message));
-				charsRead = recv(establishedConnectionFD, message, sizeof(message), 0); // Read the client's message from the socket
-				if (charsRead < 0) error("ERROR reading from socket");
+				// memset(message, '\0', sizeof(message));
+				// charsRead = recv(establishedConnectionFD, message, sizeof(message), 0); // Read the client's message from the socket
+				// if (charsRead < 0) error("ERROR reading from socket");
 				//printf("SERVER: I received this from the client: \"%s\"\n", message);
+
+				do
+				{
+					// Get the message from the client and display it
+					memset(buffer, '\0', sizeof(buffer));
+					charsRead = recv(establishedConnectionFD, buffer, sizeof(buffer), 0); // Read the client's message from the socket
+					if (charsRead < 0) error("ERROR reading from socket");
+					strcat(message, buffer);
+
+				} while (message[strlen(message)-1] != 'c');
 
 				// encoding code
 				sscanf(message, "%[^'$']$%[^'$']$%s", cipherText, key, signature);
@@ -83,6 +93,7 @@ int main(int argc, char const *argv[])
 				if (strcmp(signature, "otp_dec") != 0)
 				{
 					fprintf(stderr, "Wrong server\n");
+					send(establishedConnectionFD, "\n", 2, 0);
 					exit(1);
 				}
 
@@ -126,12 +137,16 @@ int main(int argc, char const *argv[])
 					}
 				}
 
-				//printf("%s\n", plainText);
+				plainText[strlen(plainText)] = '\n';
 
 				// Send a Success message back to the client
 				//charsRead = send(establishedConnectionFD, "I am the server, and I got your message", 39, 0); // Send success back
 				charsRead = send(establishedConnectionFD, &plainText, strlen(plainText), 0); // Send success back
 				if (charsRead < 0) error("ERROR writing to socket");
+				if (charsRead < strlen(plainText))
+				{
+					fprintf(stderr, "Unable to send entire message\n");
+				}
 
 				exit(0);
 			default:

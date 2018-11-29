@@ -147,12 +147,23 @@ int main(int argc, char const *argv[])
 	} while (charsWritten < strlen(message));
 
 	// Get return message from server
-	memset(buffer, '\0', sizeof(buffer)); // Clear out the buffer again for reuse
-	charsRead = recv(socketFD, buffer, sizeof(buffer) - 1, 0); // Read data from the socket, leaving \0 at end
-	if (charsRead < 0) error("CLIENT: ERROR reading from socket");
+	// memset(buffer, '\0', sizeof(buffer)); // Clear out the buffer again for reuse
+	// charsRead = recv(socketFD, buffer, sizeof(buffer) - 1, 0); // Read data from the socket, leaving \0 at end
+	// if (charsRead < 0) error("CLIENT: ERROR reading from socket");
+
+	memset(message, '\0', sizeof(message));
+	do
+	{
+		// Get the message from the client and display it
+		memset(buffer, '\0', sizeof(buffer));
+		charsRead = recv(socketFD, buffer, sizeof(buffer), 0); // Read the client's message from the socket
+		if (charsRead < 0) error("ERROR reading from socket");
+		strcat(message, buffer);
+
+	} while (message[strlen(message)-1] != '\n');
 	
 	//printf("CLIENT: I received this from the server: \"%s\"\n", buffer);
-	printf("%s\n", buffer);
+	printf("%s", message);
 
 	close(socketFD); // Close the socket
 	return 0;
