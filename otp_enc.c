@@ -136,6 +136,7 @@ int main(int argc, char const *argv[])
 	charsWritten = 0;
 	int charsSentThisPass = 0;
 	int messageLength = strlen(message);
+	char *messageSegment = message;
 	do
 	{
 		charsSentThisPass = send(socketFD, &message, strlen(message), 0);
@@ -144,8 +145,12 @@ int main(int argc, char const *argv[])
 			fprintf(stderr, "Error writing to socket\n");
 			exit(1);
 		}
+		if (charsSentThisPass < messageLength)
+		{
+			fprintf(stderr, "Unable to send entire message\n", );
+		}
 		charsWritten += charsSentThisPass;
-		//message += charsSentThisPass;
+		//messageSegment += charsSentThisPass;
 
 	} while (charsWritten < messageLength);//strlen(message));
 
